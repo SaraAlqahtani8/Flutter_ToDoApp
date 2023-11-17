@@ -1,13 +1,17 @@
 // TODO Implement this library.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_todoapp/model/ToDo.dart';
 
 class ToDoItem extends StatelessWidget {
-  const ToDoItem({Key? key}) : super(key: key);
+  final ToDo toDo;
+
+  const ToDoItem({Key? key, required this.toDo}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.only(bottom: 20),
       child: ListTile(
         onTap: () {},
         shape: RoundedRectangleBorder(
@@ -15,12 +19,17 @@ class ToDoItem extends StatelessWidget {
         ),
         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
         tileColor: Colors.white,
-        leading: Icon(Icons.check_box, color: Colors.red),
-        title: Text('check mail',
+        leading: Icon(
+          toDo.isDone
+              ? Icons.check_box
+              : Icons.check_box_outline_blank_outlined,
+          color: Colors.red,
+        ),
+        title: Text(toDo.toDoText!,
             style: TextStyle(
               fontSize: 16,
               color: Colors.black,
-              decoration: TextDecoration.lineThrough,
+              decoration: toDo.isDone ? TextDecoration.lineThrough : null,
             )),
         trailing: Container(
           padding: EdgeInsets.all(0),

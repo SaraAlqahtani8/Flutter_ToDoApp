@@ -5,9 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_todoapp/constant/color.dart';
 import 'package:flutter_todoapp/Widgets/toDo_item.dart';
-
+import 'package:flutter_todoapp/model/ToDo.dart';
 class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+   Home({Key? key}) : super(key: key);
+final todoList=ToDo.todoList();
 
   // This widget is the root of your application.
   @override
@@ -33,10 +34,10 @@ class Home extends StatelessWidget {
                       ),
                     ),
                   ),
-                  ToDoItem(),
-                  ToDoItem(),
-                  ToDoItem(),
-                  //sara
+                  for(ToDo toDo in todoList)
+                  ToDoItem(toDo: toDo,),
+                
+                 
                 ],
               ),
             ),
