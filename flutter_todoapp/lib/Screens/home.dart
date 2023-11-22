@@ -7,11 +7,25 @@ import 'package:flutter_todoapp/constant/color.dart';
 import 'package:flutter_todoapp/Widgets/toDo_item.dart';
 import 'package:flutter_todoapp/model/ToDo.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
-  final todoList = ToDo.todoList();
 
-  // This widget is the root of your application.
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  final todoList = ToDo.todoList();
+  List<ToDo> FoundTODO = [];
+  final ToDoController = TextEditingController();
+
+  @override
+  void initState() {
+    FoundTODO = todoList;
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,9 +51,11 @@ class Home extends StatelessWidget {
                           ),
                         ),
                       ),
-                      for (ToDo toDo in todoList)
+                      for (ToDo toDo in FoundTODO.reversed)
                         ToDoItem(
                           toDo: toDo,
+                          handel_ToDO: handel_ToDO,
+                          OnDeleteItem: DeleteItem,
                         ),
                     ],
                   ),
@@ -56,10 +72,10 @@ class Home extends StatelessWidget {
                     margin: EdgeInsets.only(bottom: 20, right: 20, left: 20),
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                     decoration: BoxDecoration(
-                      color: Colors.black12,
+                      color: Colors.grey,
                       boxShadow: const [
                         BoxShadow(
-                          color: CBlue,
+                          color: Colors.white,
                           offset: Offset(0.0, 0.0),
                           blurRadius: 10.0,
                           spreadRadius: 0.0,
@@ -68,6 +84,7 @@ class Home extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: TextField(
+                      controller: ToDoController,
                       decoration: InputDecoration(
                           hintText: 'Add new toDo item!',
                           border: InputBorder.none),
@@ -83,7 +100,9 @@ class Home extends StatelessWidget {
                         fontSize: 40,
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      AddtoDoItem(ToDoController.text);
+                    },
                     style: ElevatedButton.styleFrom(
                         primary: CRed,
                         minimumSize: Size(60, 60),
@@ -98,6 +117,42 @@ class Home extends StatelessWidget {
     );
   }
 
+  void handel_ToDO(ToDo toDo) {
+    setState(() {
+      toDo.isDone = !toDo.isDone;
+    });
+  }
+
+  void DeleteItem(String id) {
+    setState(() {
+      todoList.removeWhere((item) => item.id == id);
+    });
+  }
+
+  void AddtoDoItem(String toDo) {
+    setState(() {
+      todoList.add(ToDo(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          toDoText: toDo));
+    });
+    ToDoController.clear();
+  }
+
+  void Runfillter(String KeyWord) {
+    List<ToDo> Result = [];
+    if (KeyWord.isEmpty) {
+      Result = todoList;
+    } else {
+      Result = todoList
+          .where((item) =>
+              item.toDoText!.toLowerCase().contains(KeyWord.toLowerCase()))
+          .toList();
+      setState(() {
+        FoundTODO = Result;
+      });
+    }
+  }
+
   Widget Search_Box() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20),
@@ -106,6 +161,7 @@ class Home extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: TextField(
+        onChanged: (value) => Runfillter(value),
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.all(0),
           prefixIcon: Icon(Icons.search, color: Colors.grey, size: 20),
